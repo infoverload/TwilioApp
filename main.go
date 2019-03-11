@@ -36,14 +36,15 @@ func main() {
 		log.Fatal("SENDER need to be set", err)
 	}
 
-	quotes := []string{
-		"I urge you to please notice when you are happy, and exclaim or murmur or think at some point, 'If this isn't nice, I don't know what is.'",
-		"Peculiar travel suggestions are dancing lessons from God.",
-		"There's only one rule that I know of, babies—God damn it, you've got to be kind.",
-		"Many people need desperately to receive this message: 'I feel and think much as you do, care about many of the things you care about, although most people do not care about them. You are not alone.'",
-		"That is my principal objection to life, I think: It's too easy, when alive, to make perfectly horrible mistakes.",
-		"So it goes.",
-		"We must be careful about what we pretend to be.",
+	words := []string{
+		"sturmfrei (adjective): Literally »storm free«. Comes from Sturmfreiheit, describing that a castle or fort is protected against attackers. Sturmfrei describes a family’s apartment/house when the parents are gone overnight and their teenagers see opportunity for a party.",
+		"Wegbier, das: Literally »Beer for the way«. Describes the taking a beer to drink on the way to go somewhere, usually to a party or event.",
+		"Saftladen, der: Literally »Juice store«. Derogatory. Describes a really badly organised company with incapable employees/managers. The German equivalent to lemonade stand. Comes from the idea that a juice store is the easiest kind of producing company.",
+		"Morgenmuffel, der: Literally »Morning bad/mouldy air personified noun«. Describes someone who is grumpy in the morning/does not like to get up early/quickly or needs a lot of time/coffee to get up to speed in the morning.",
+		"Schnapsidee, die: Literally »hard liquor idea«. Describes an idea whose realisation is unrealistic. Comes from the phenomenon of drunk people coming up with the wildest ideas and considering them brilliant. Mostly used to colloquially label ideas of sober people.",
+		"Papierkrieg, der: Literally »paper war«. Describes longish correspondences with bureaucratic offices through forms and letters. Includes a slight hint of perception as unnecessary.",
+		"Kabelsalat, der: Literally »cable salad«. Describes the mess that a bunch of cables somehow naturally entangle to.",
+		"Blümchenkaffee, der: Literally »little flower coffee«. Weak drip coffee. Named after the little flowers painted on the bottom of porcelain cups. The aforementioned coffee is so weak that these are still visible even when the cup is full.",
 	}
 
 	rand.Seed(time.Now().Unix())
@@ -51,7 +52,7 @@ func main() {
 	c := twilio.NewClient(accountSid, authToken, nil)
 
 	params := twilio.MessageParams{
-		Body: quotes[rand.Intn(len(quotes))],
+		Body: words[rand.Intn(len(words))],
 	}
 	s, resp, err := c.Messages.Send(sender, receiver, params)
 	if err != nil {
@@ -59,5 +60,4 @@ func main() {
 	}
 	log.Printf("Message Sent: %v\n", s)
 	log.Printf("Response: %v\n", resp)
-
 }
