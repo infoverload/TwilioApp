@@ -10,12 +10,7 @@ import (
 	"github.com/subosito/twilio"
 )
 
-type options struct {
-	accountSid string
-	authToken  string
-	receiver   string
-	sender     string
-}
+var accountSid, authToken, receiver, sender string
 
 func main() {
 	err := godotenv.Load()
@@ -23,27 +18,22 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	opts := options{
-		accountSid: os.Getenv("SID"),
-		authToken:  os.Getenv("TOKEN"),
-		receiver:   os.Getenv("RECEIVER"),
-		sender:     os.Getenv("SENDER"),
-	}
+	accountSid = os.Getenv("SID")
+	authToken = os.Getenv("TOKEN")
+	receiver = os.Getenv("RECEIVER")
+	sender = os.Getenv("SENDER")
 
-	if opts.accountSid == "" {
-		log.Fatal("SID need to be set")
+	if accountSid == "" {
+		log.Fatal("SID need to be set", err)
 	}
-
-	if opts.authToken == "" {
-		log.Fatal("TOKEN need to be set")
+	if authToken == "" {
+		log.Fatal("TOKEN need to be set", err)
 	}
-
-	if opts.receiver == "" {
-		log.Fatal("RECEIVER need to be set")
+	if receiver == "" {
+		log.Fatal("RECEIVER need to be set", err)
 	}
-
-	if opts.sender == "" {
-		log.Fatal("SENDER need to be set")
+	if sender == "" {
+		log.Fatal("SENDER need to be set", err)
 	}
 
 	quotes := []string{
@@ -58,12 +48,12 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	c := twilio.NewClient(opts.accountSid, opts.authToken, nil)
+	c := twilio.NewClient(accountSid, authToken, nil)
 
 	params := twilio.MessageParams{
 		Body: quotes[rand.Intn(len(quotes))],
 	}
-	s, resp, err := c.Messages.Send(opts.sender, opts.receiver, params)
+	s, resp, err := c.Messages.Send(sender, receiver, params)
 	if err != nil {
 		log.Fatal("Err:", err)
 	}
