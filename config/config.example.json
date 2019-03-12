@@ -1,6 +1,6 @@
 {
-    "accountSid": "XXX",
-    "authToken": "XXX",
-    "receiver": "XXX",
-    "sender": "XXX"
+    "AccountSid": "XXX",
+    "AuthToken": "XXX",
+    "Receiver": "XXX",
+    "Sender": "XXX"
 }
