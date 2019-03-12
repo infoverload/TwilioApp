@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -10,15 +11,31 @@ import (
 	"github.com/subosito/twilio"
 )
 
-type config struct {
-	AccountSid string `json:"accountSid"`
-	AuthToken  string `json:"authToken"`
-	Receiver   string `json:"receiver"`
-	Sender     string `json:"sender"`
+type options struct {
+	AccountSid string `json:"AccountSid"`
+	AuthToken  string `json:"AuthToken"`
+	Receiver   string `json:"Receiver"`
+	Sender     string `json:"Sender"`
+}
+
+func (o *options) validate() error {
+	if o.AccountSid == "" {
+		return errors.New("AccountSid variable not set")
+	}
+	if o.AuthToken == "" {
+		return errors.New("AuthToken variable not set")
+	}
+	if o.Receiver == "" {
+		return errors.New("Receiver variable not set")
+	}
+	if o.Sender == "" {
+		return errors.New("Sender variable not set")
+	}
+	return nil
 }
 
 func main() {
-	var twilioConfig config
+	var twilioConfig options
 
 	content, err := ioutil.ReadFile("config/config.development.json")
 	if err != nil {
@@ -30,17 +47,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if twilioConfig.AccountSid == "" {
-		log.Fatal("SID need to be set", err)
-	}
-	if twilioConfig.AuthToken == "" {
-		log.Fatal("TOKEN need to be set", err)
-	}
-	if twilioConfig.Receiver == "" {
-		log.Fatal("RECEIVER need to be set", err)
-	}
-	if twilioConfig.Sender == "" {
-		log.Fatal("SENDER need to be set", err)
+	err = twilioConfig.validate()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	words := []string{
@@ -61,10 +70,11 @@ func main() {
 	params := twilio.MessageParams{
 		Body: words[rand.Intn(len(words))],
 	}
-	s, resp, err := c.Messages.Send(twilioConfig.Sender, twilioConfig.Receiver, params)
+
+	msg, resp, err := c.Messages.Send(twilioConfig.Sender, twilioConfig.Receiver, params)
 	if err != nil {
-		log.Fatal("Err:", err)
+		log.Fatal("Error:", err)
 	}
-	log.Printf("Message Sent: %v\n", s)
+	log.Printf("Message Sent: %v\n", msg)
 	log.Printf("Response: %v\n", resp)
 }
