@@ -1,38 +1,45 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"math/rand"
-	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/subosito/twilio"
 )
 
-var accountSid, authToken, receiver, sender string
+type config struct {
+	AccountSid string `json:"accountSid"`
+	AuthToken  string `json:"authToken"`
+	Receiver   string `json:"receiver"`
+	Sender     string `json:"sender"`
+}
 
 func main() {
-	err := godotenv.Load()
+	var twilioConfig config
+
+	content, err := ioutil.ReadFile("config/config.development.json")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal(err)
 	}
 
-	accountSid = os.Getenv("SID")
-	authToken = os.Getenv("TOKEN")
-	receiver = os.Getenv("RECEIVER")
-	sender = os.Getenv("SENDER")
+	err = json.Unmarshal(content, &twilioConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	if accountSid == "" {
+	if twilioConfig.AccountSid == "" {
 		log.Fatal("SID need to be set", err)
 	}
-	if authToken == "" {
+	if twilioConfig.AuthToken == "" {
 		log.Fatal("TOKEN need to be set", err)
 	}
-	if receiver == "" {
+	if twilioConfig.Receiver == "" {
 		log.Fatal("RECEIVER need to be set", err)
 	}
-	if sender == "" {
+	if twilioConfig.Sender == "" {
 		log.Fatal("SENDER need to be set", err)
 	}
 
@@ -49,12 +56,12 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	c := twilio.NewClient(accountSid, authToken, nil)
+	c := twilio.NewClient(twilioConfig.AccountSid, twilioConfig.AuthToken, nil)
 
 	params := twilio.MessageParams{
 		Body: words[rand.Intn(len(words))],
 	}
-	s, resp, err := c.Messages.Send(sender, receiver, params)
+	s, resp, err := c.Messages.Send(twilioConfig.Sender, twilioConfig.Receiver, params)
 	if err != nil {
 		log.Fatal("Err:", err)
 	}
